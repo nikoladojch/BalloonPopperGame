@@ -1,0 +1,121 @@
+Index: app/src/main/java/com/example/nikola/gameapp/utils/SoundHelper.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/nikola/gameapp/utils/SoundHelper.java	(revision )
++++ app/src/main/java/com/example/nikola/gameapp/utils/SoundHelper.java	(revision )
+@@ -0,0 +1,82 @@
++package com.example.nikola.gameapp.utils;
++
++import android.app.Activity;
++import android.content.Context;
++import android.media.AudioAttributes;
++import android.media.AudioManager;
++import android.media.MediaPlayer;
++import android.media.SoundPool;
++import android.view.View;
++
++import com.example.nikola.gameapp.R;
++
++/**
++ * Created by Nikola on 07.01.2018.
++ */
++
++public class SoundHelper {
++
++    private MediaPlayer mMusicPlayer;
++
++    private SoundPool mSoundPool;
++    private int mSoundID;
++    private boolean mLoaded;
++    private float mVolume;
++
++    public SoundHelper(Activity activity) {
++
++        AudioManager audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
++        float actVolume = (float) audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
++        float maxVolume = (float) audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
++        mVolume = actVolume / maxVolume;
++
++        activity.setVolumeControlStream(AudioManager.STREAM_MUSIC);
++
++        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
++            AudioAttributes audioAttrib = new AudioAttributes.Builder()
++                    .setUsage(AudioAttributes.USAGE_GAME)
++                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
++                    .build();
++            mSoundPool = new SoundPool.Builder().setAudioAttributes(audioAttrib).setMaxStreams(6).build();
++        } else {
++            //noinspection deprecation
++            mSoundPool = new SoundPool(6, AudioManager.STREAM_MUSIC, 0);
++        }
++
++        mSoundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
++            @Override
++            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
++                mLoaded = true;
++            }
++        });
++        mSoundID = mSoundPool.load(activity, R.raw.balloonpop, 1);
++    }
++
++    public void playSound() {
++        if (mLoaded) {
++            mSoundPool.play(mSoundID, 0.1f, 0.1f, 1, 0, 1f);
++        }
++    }
++
++    public void prepareMusicPlayer(Context context){
++        mMusicPlayer = MediaPlayer.create(context.getApplicationContext(), R.raw.gamemusic);
++        mMusicPlayer.setVolume(.8f,.8f);
++        mMusicPlayer.setLooping(true);
++    }
++
++    public void  playMusic(){
++        if(mMusicPlayer != null){
++            mMusicPlayer.start();
++        }
++    }
++
++    public void pauseMusic(){
++        if(mMusicPlayer != null && mMusicPlayer.isPlaying()){
++            mMusicPlayer.pause();
++        }
++    }
++
++
++
++
++}
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/misc.xml	(date 1515353019000)
++++ .idea/misc.xml	(revision )
+@@ -1,5 +1,23 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="JavadocGenerationManager">
++    <option name="OUTPUT_DIRECTORY" />
++    <option name="OPTION_SCOPE" value="protected" />
++    <option name="OPTION_HIERARCHY" value="true" />
++    <option name="OPTION_NAVIGATOR" value="true" />
++    <option name="OPTION_INDEX" value="true" />
++    <option name="OPTION_SEPARATE_INDEX" value="true" />
++    <option name="OPTION_DOCUMENT_TAG_USE" value="false" />
++    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="false" />
++    <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
++    <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
++    <option name="OPTION_DEPRECATED_LIST" value="true" />
++    <option name="OTHER_OPTIONS" value="" />
++    <option name="HEAP_SIZE" />
++    <option name="LOCALE" />
++    <option name="OPEN_IN_BROWSER" value="true" />
++    <option name="OPTION_INCLUDE_LIBS" value="false" />
++  </component>
+   <component name="NullableNotNullManager">
+     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
+     <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
